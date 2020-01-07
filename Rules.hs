@@ -78,6 +78,9 @@ atom_tree (Node x [z]) = atom_tree z
 derivation :: [CanSeq] -> Tree [CanSeq]
 derivation x = until (atom_tree) prooftree (Node x [])
 
+derivationF :: For -> Tree [CanSeq]
+derivationF x = derivation [sortCan x]
+
 
 
 
