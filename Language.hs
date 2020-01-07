@@ -18,9 +18,11 @@ infix 6 `I`
 
 
 
-newtype CanSeq = Can ([For], [For], [For]) -- var, alpha, beta
+newtype CanSeq = Can ([For], [For], [For]) deriving(Eq,Read,Show)
+-- var, alpha, beta
 
-newtype DualSeq = Dual ([For], [For], [For]) -- var, alpha, beta
+newtype DualSeq = Dual ([For], [For], [For]) deriving(Eq,Read,Show)
+-- var, alpha, beta
 
 type GeneralSeq = Either CanSeq DualSeq
 
