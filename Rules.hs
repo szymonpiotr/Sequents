@@ -22,6 +22,7 @@ beta x = case x of
 var :: For -> Bool
 var x = case x of
     V _ -> True
+    N (V _) -> True
     _ -> False
 
 insert :: For -> CanSeq -> CanSeq
