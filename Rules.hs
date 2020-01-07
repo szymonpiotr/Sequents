@@ -3,10 +3,11 @@ module Rules where
 import Language
 import Data.Tree
 
-
 alpha :: For -> Bool
 alpha x = case x of
         A _ _ -> True
+	N (D _ _) -> True
+	N ( I _ _) -> True
         E _ _ -> True
         _     -> False
 
@@ -14,6 +15,8 @@ beta :: For -> Bool
 beta x = case x of
         D _ _ -> True
         I _ _ -> True
+	N (A _ _) -> True
+	N (E _ _) -> True
         _     -> False
 
 var :: For -> Bool
