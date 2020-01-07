@@ -2,6 +2,7 @@ module Rules where
 
 import Language
 import Data.Tree
+import Sort
 import Text.PrettyPrint
 
 insert :: For -> CanSeq -> CanSeq
