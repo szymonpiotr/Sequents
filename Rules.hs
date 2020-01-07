@@ -2,6 +2,7 @@ module Rules where
 
 import Language
 import Data.Tree
+import Text.PrettyPrint
 
 alpha :: For -> Bool
 alpha x = case x of
@@ -80,6 +81,32 @@ derivation x = until (atom_tree) prooftree (Node x [])
 
 
 
+printFor :: For -> String
+printFor for = case for of
+    (V y)    -> "p" ++ (show y)
+    (N y)    -> "~" ++ "(" ++ (printFor (y)) ++ ")"
+    (E y z)  -> "(" ++ printFor (y) ++ ")" ++ " = " ++ "(" ++ printFor (z) ++ ")"
+    (I y z)  -> "(" ++ printFor (y) ++ ")" ++ " -> " ++ "(" ++ printFor (z) ++ ")"
+    (A y z)  -> "(" ++ printFor (y) ++ ")" ++ " & " ++ "(" ++ printFor (z) ++ ")"
+    (D y z)  -> "(" ++ printFor (y) ++ ")" ++ " v " ++ "(" ++ printFor (z) ++ ")"
+
+mapPrint :: [For] -> String
+mapPrint (x:xs) = "[" ++ printFor x ++ ", "  ++ mapPrint xs
+mapPrint [] = "]"
+
+printSeq :: CanSeq -> String
+printSeq  (Can (x, y, z)) = "Can " ++ "([" ++ mapPrint x  ++ "]" ++ ",[" ++ mapPrint y  ++ "]" ++ ",[" ++ mapPrint z  ++ "])" 
+
+mapPrint2 :: [CanSeq] -> String
+mapPrint2 (x:xs) = "[" ++ printSeq x ++ ", "  ++ mapPrint2 xs
+mapPrint2 [] = "]"
+
+
+canseq2string :: Tree [CanSeq] -> Tree String
+canseq2string (Node x []) = Node (mapPrint2 x) []
+canseq2string (Node x xs) = Node (mapPrint2 x) (map canseq2string xs) 
+
+
 f1 = I (A (I (N (V 1)) (D (V 2) (V 1))) (D (V 1) (V 2))) (N (V 2)) 
 -- p v ~p
 f2 = D (V 1) (N (V 1))
@@ -89,6 +116,7 @@ f3 = I (D (V 1) (N (V 3))) (A (V 10) (V 3))
 f4 = I (I (V 1) (V 2)) (I (I (V 1) (N (V 2))) (N (V 1) ))
 
 f5 = I (D (N (V 1)) (V 2)) (V 3)
+
 
 
 {-
