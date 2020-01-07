@@ -71,7 +71,7 @@ prooftree (Node x [])
         | not (all atomicseq x) = (Node x [(Node (applyrule1 x) [])])
 prooftree (Node x xs) = Node x (map prooftree xs) 
 
-f
+
 atom_tree (Node x []) = if all atomicseq x then True else False 
 atom_tree (Node x [z]) = atom_tree z 
 
