@@ -1,6 +1,7 @@
 module Rules where
 
 import Language
+import Data.Tree
 
 
 alpha :: For -> Bool
@@ -56,20 +57,20 @@ applyrule1 (x:xs) = if atomicseq x then (x:applyrule1 xs) else (applyrule x) ++ 
 applyrule1 [] = []  
 
 
-buildtree :: CanSeq -> RoseTree [CanSeq]
+buildtree :: CanSeq -> Tree [CanSeq]
 buildtree x = Node [x] [Node (applyrule x) []]
 
-prooftree :: RoseTree [CanSeq] -> RoseTree [CanSeq]
+prooftree :: Tree [CanSeq] -> Tree [CanSeq]
 prooftree (Node x []) 
 	| all atomicseq x = (Node x [])
         | not (all atomicseq x) = (Node x [(Node (applyrule1 x) [])])
 prooftree (Node x xs) = Node x (map prooftree xs) 
 
-
+f
 atom_tree (Node x []) = if all atomicseq x then True else False 
 atom_tree (Node x [z]) = atom_tree z 
 
-derivation :: [CanSeq] -> RoseTree [CanSeq]
+derivation :: [CanSeq] -> Tree [CanSeq]
 derivation x = until (atom_tree) prooftree (Node x [])
 
 
