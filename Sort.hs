@@ -1,7 +1,6 @@
 module Sort where
 
 import Language
-import Rules
 
 sortList :: [For] -> ([For],[For],[For]) -> ([For],[For],[For])
 sortList [] (a,b,c) = (a,b,c)
