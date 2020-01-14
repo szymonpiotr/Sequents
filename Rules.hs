@@ -15,14 +15,14 @@ insert f (Can (xs, ys, zs))
 ruleAlpha :: CanSeq -> [CanSeq]
 ruleAlpha (Can (xs, y:ys, zs)) = case y of
     A n m -> [(insert n (Can (xs,ys, zs))), (insert m (Can (xs, ys, zs)))]
-		E n m -> [(insert (N m) (insert n (Can (xs,ys, zs)))), (insert (N n) (insert m (Can (xs, ys, zs))))]
-		N (E n m) -> [(insert m (insert n (Can (xs,ys, zs)))), (insert n (insert m (Can (xs, ys, zs))))]
-		N (I n m) -> [(insert n (Can (xs,ys, zs))), (insert (N m) (Can (xs, ys, zs)))]
-		N (D n m) -> [(insert (N n) (Can (xs,ys, zs))), (insert (N m) (Can (xs, ys, zs)))]
+	E n m -> [(insert (N m) (insert n (Can (xs,ys, zs)))), (insert (N n) (insert m (Can (xs, ys, zs))))]
+	N (E n m) -> [(insert m (insert n (Can (xs,ys, zs)))), (insert n (insert m (Can (xs, ys, zs))))]
+	N (I n m) -> [(insert n (Can (xs,ys, zs))), (insert (N m) (Can (xs, ys, zs)))]
+	N (D n m) -> [(insert (N n) (Can (xs,ys, zs))), (insert (N m) (Can (xs, ys, zs)))]
 
 ruleBeta :: CanSeq -> [CanSeq]
 ruleBeta (Can (xs, ys, z:zs)) = case z of
-        I n m -> [insert m (insert (N n) (Can (xs,ys, zs)))]
+    I n m -> [insert m (insert (N n) (Can (xs,ys, zs)))]
 	D n m -> [insert m (insert n (Can (xs,ys, zs)))]
 	N (A n m) -> [insert (N m) (insert (N n) (Can (xs,ys, zs)))]
 	
