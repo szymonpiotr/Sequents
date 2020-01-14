@@ -52,7 +52,7 @@ buildtree x = Node [x] [Node (applyrule x) []]
 
 prooftree :: Tree [CanSeq] -> Tree [CanSeq]
 prooftree (Node x []) 
-	| all atomicseq x = (Node x [])
+    	| all atomicseq x = (Node x [])
         | not (all atomicseq x) = (Node x [(Node (applyrule1 x) [])])
 prooftree (Node x xs) = Node x (map prooftree xs) 
 
