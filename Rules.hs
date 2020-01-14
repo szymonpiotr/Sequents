@@ -27,10 +27,7 @@ ruleBeta (Can (xs, ys, z:zs)) = case z of
 	N (A n m) -> [insert (N m) (insert (N n) (Can (xs,ys, zs)))]
 	
 	
-atomicseq :: CanSeq -> Bool
-atomicseq (Can (x, y, z)) 
-	| (null y && null z) = True 
-	| 
+atomicseq (Can (x, y, z)) = if ((null y && null z) || checkform y z) then True else False 
 
 checkform :: [For] -> [For] -> Bool
 checkform [] ys = False
