@@ -67,6 +67,29 @@ derivationF :: For -> Tree [CanSeq]
 derivationF x = derivation [sortCan x]
 
 
+-- zwraca formułę komplementarna
+compl :: For -> For
+compl x =  case x of 
+	N z -> z
+	z -> N z
+
+-- czy dana formuła jest elementem sekwentu
+elemseq :: For -> DualSeq -> Bool
+elemseq x (Dual (xs, ys, zs)) = elem x xs || elem x ys || elem x zs
+
+returncompl :: [For] -> [For] -> [For]
+returncompl [] zs = []
+returncompl xs [] = []
+returncompl (x:xs) zs = if elem (compl x) zs then x:(compl x):returncompl xs zs else returncompl xs zs
+
+
+-- bierze dwa sekwenty i wypluwa liste formuł komplementarnych
+compllist :: DualSeq -> DualSeq -> [For]
+compllist (Dual (x, y, z)) (Dual (x1, y1, z1)) = returncompl x x1 ++ returncompl y z1 ++ returncompl z y1
+
+test1 = Dual ([(V 1), (V 2)], [], [])
+test2 = Dual ([N (V 1), N (V 2), N (V 1)], [], [])
+
 
 
 printFor :: For -> String
