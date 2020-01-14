@@ -12,9 +12,9 @@ data For =   Verum
 
 infix 9 `V`
 infix 8 `N`
-infix 7 `A`
-infix 7 `D`
-infix 6 `I`
+infixr 7 `A`
+infixr 7 `D`
+infixr 6 `I`
 
 
 
