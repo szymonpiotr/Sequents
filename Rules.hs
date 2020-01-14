@@ -90,7 +90,33 @@ compllist (Dual (x, y, z)) (Dual (x1, y1, z1)) = returncompl x x1 ++ returncompl
 test1 = Dual ([(V 1), (V 2)], [], [])
 test2 = Dual ([N (V 1), N (V 2), N (V 1)], [], [])
 
+test3 = Dual ([], [], [N (D (V 1) (V 2))])
+test4 = Dual ([], [D (V 1) (V 2)], [])
 
+test5 = Dual ([V 1], [], [])
+test6 = Dual ([V 2], [], [])
+test7 = Dual ([N (V 1)], [], [])
+
+
+
+-- rezolucja
+fun :: [For] -> DualSeq -> DualSeq -> DualSeq
+fun (x1:x2:xs) (Dual (z1, z2, z3)) (Dual (y1, y2, y3)) = case var x1 of 
+	True -> Dual (filter (/= x1) z1 ++ filter (/= x2) y1, z2 ++ y2, z3 ++ y3)  
+	False -> case beta x1 of
+		True -> Dual (y1 ++ z1, filter (/= x1) z2 ++ y2, filter (/= x2) y3 ++ z3)
+		False -> Dual (y1 ++ z1, filter (/= x2) y2 ++ z2, filter (/= x1) z3 ++ y3)
+
+
+-- znalezienie sekwentu w liscie, z uwagi na ktorego mozna zastosowac rezolucje wzgledem pierwszego
+-- 
+fun2 :: DualSeq -> [DualSeq] -> [DualSeq]
+fun2 x [] = [x]
+fun2 x (y:ys) = if c == [] then fun2 x ys ++ [y] else
+		(fun c x y):ys ++ [x, y]	
+		where 
+			c = compllist x y
+	  
 
 printFor :: For -> String
 printFor for = case for of
