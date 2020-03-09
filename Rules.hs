@@ -11,8 +11,8 @@ insert f (Can (xs, ys, zs))
 	| beta f    = Can (xs, ys, f:zs)
 	| otherwise = Can (xs, f:ys, zs)
 	
-insertDual :: For -> DaulSeq -> DualSeq
-insertDual (Dual (xs, ys, zs))
+insertDual :: For -> DualSeq -> DualSeq
+insertDual f (Dual (xs, ys, zs))
 	| var f	= Dual (f:xs, ys, zs)	 
 	| beta f = Dual (xs, f:ys, zs)
 	| otherwise = Dual (xs, ys, f:zs)
@@ -20,24 +20,23 @@ insertDual (Dual (xs, ys, zs))
 
 ruleAlpha :: CanSeq -> [CanSeq]
 ruleAlpha (Can (xs, y:ys, zs)) = case y of
-    	A n m -> [(insert n (Can (xs,ys, zs))), (insert m (Can (xs, ys, zs)))]
-	E n m -> [(insert (N m) (insert n (Can (xs,ys, zs)))), (insert (N n) (insert m (Can (xs, ys, zs))))]
-	N (E n m) -> [(insert m (insert n (Can (xs,ys, zs)))), (insert n (insert m (Can (xs, ys, zs))))]
-	N (I n m) -> [(insert n (Can (xs,ys, zs))), (insert (N m) (Can (xs, ys, zs)))]
-	N (D n m) -> [(insert (N n) (Can (xs,ys, zs))), (insert (N m) (Can (xs, ys, zs)))]
+    A n m -> [(insert n (Can (xs,ys, zs))), (insert m (Can (xs, ys, zs)))]
+    E n m -> [(insert (N m) (insert n (Can (xs,ys, zs)))), (insert (N n) (insert m (Can (xs, ys, zs))))]
+    N (E n m) -> [(insert m (insert n (Can (xs,ys, zs)))), (insert n (insert m (Can (xs, ys, zs))))]
+    N (I n m) -> [(insert n (Can (xs,ys, zs))), (insert (N m) (Can (xs, ys, zs)))]
+    N (D n m) -> [(insert (N n) (Can (xs,ys, zs))), (insert (N m) (Can (xs, ys, zs)))]
 	
 branchingDual :: DualSeq -> [DualSeq]
 branchingDual (Dual (xs, y:ys, zs)) = case y of
-    	D n m -> [(insertDual n (Can (xs,ys, zs))), (insertDual m (Can (xs, ys, zs)))]
-	N (A n m) -> [(insert (N n) (Can (xs,ys, zs))), (insert (N m) (Can (xs, ys, zs)))]
+    D n m -> [(insertDual n (Dual (xs,ys, zs))), (insertDual m (Dual (xs, ys, zs)))]
+    N (A n m) -> [(insertDual (N n) (Dual (xs,ys, zs))), (insertDual (N m) (Dual (xs, ys, zs)))]
 
 
 ruleBeta :: CanSeq -> [CanSeq]
 ruleBeta (Can (xs, ys, z:zs)) = case z of
     I n m -> [insert m (insert (N n) (Can (xs,ys, zs)))]
-	D n m -> [insert m (insert n (Can (xs,ys, zs)))]
-	N (A n m) -> [insert (N m) (insert (N n) (Can (xs,ys, zs)))]
-	
+    D n m -> [insert m (insert n (Can (xs,ys, zs)))]
+    N (A n m) -> [insert (N m) (insert (N n) (Can (xs,ys, zs)))]
 	
 atomicseq (Can (x, y, z)) = if ((null y && null z) || checkform y z) then True else False 
 
