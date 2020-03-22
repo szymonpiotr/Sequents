@@ -69,45 +69,47 @@ applyrule1 :: [CanSeq] -> [CanSeq]
 applyrule1 (x:xs) = if atomicseq x then (x:applyrule1 xs) else (applyrule x) ++ xs
 applyrule1 [] = []  
 
--- build a tree using rule applying rules to hypersequent
+-- builds a tree using rule applying rules to hypersequent
 buildtree :: CanSeq -> Tree [CanSeq]
 buildtree x = Node [x] [Node (applyrule x) []]
 
-
+-- similar as above but the argument is of a tree type
 prooftree :: Tree [CanSeq] -> Tree [CanSeq]
 prooftree (Node x []) 
     	| all atomicseq x = (Node x [])
         | not (all atomicseq x) = (Node x [(Node (applyrule1 x) [])])
 prooftree (Node x xs) = Node x (map prooftree xs) 
 
-
+-- checks if tree is atomic, that is all of the leaves are atomic
 atom_tree (Node x []) = if all atomicseq x then True else False 
 atom_tree (Node x [z]) = atom_tree z 
 
+-- builds a derivation for a hypersequent
 derivation :: [CanSeq] -> Tree [CanSeq]
 derivation x = until (atom_tree) prooftree (Node x [])
 
+-- similar as above, but starting with a singular formula
 derivationF :: For -> Tree [CanSeq]
 derivationF x = derivation [sortCan x]
 
-
--- zwraca formułę komplementarna
+-- returns complementary formulas
 compl :: For -> For
 compl x =  case x of 
 	N z -> z
 	z -> N z
 
--- czy dana formuła jest elementem sekwentu
+-- checks if a given formula is an element of a sequent
 elemseq :: For -> DualSeq -> Bool
 elemseq x (Dual (xs, ys, zs)) = elem x xs || elem x ys || elem x zs
 
+-- returns a lidt of complementary formulas
 returncompl :: [For] -> [For] -> [For]
 returncompl [] zs = []
 returncompl xs [] = []
 returncompl (x:xs) zs = if elem (compl x) zs then x:(compl x):returncompl xs zs else returncompl xs zs
 
 
--- bierze dwa sekwenty i wypluwa liste formuł komplementarnych
+-- given two sequents, function returns list of complementary formulas
 compllist :: DualSeq -> DualSeq -> [For]
 compllist (Dual (x, y, z)) (Dual (x1, y1, z1)) = returncompl x x1 ++ returncompl y z1 ++ returncompl z y1
 
@@ -123,7 +125,7 @@ test7 = Dual ([N (V 1)], [], [])
 
 
 
--- rezolucja
+-- resolution
 fun :: [For] -> DualSeq -> DualSeq -> DualSeq
 fun (x1:x2:xs) (Dual (z1, z2, z3)) (Dual (y1, y2, y3)) = case var x1 of 
 	True -> Dual (filter (/= x1) z1 ++ filter (/= x2) y1, z2 ++ y2, z3 ++ y3)  
@@ -132,8 +134,7 @@ fun (x1:x2:xs) (Dual (z1, z2, z3)) (Dual (y1, y2, y3)) = case var x1 of
 		False -> Dual (y1 ++ z1, filter (/= x2) y2 ++ z2, filter (/= x1) z3 ++ y3)
 
 
--- znalezienie sekwentu w liscie, z uwagi na ktorego mozna zastosowac rezolucje wzgledem pierwszego
--- 
+-- finding a sequent in a list by means of which we can employ resolution method
 fun2 :: DualSeq -> [DualSeq] -> [DualSeq]
 fun2 x [] = [x]
 fun2 x (y:ys) = if c == [] then fun2 x ys ++ [y] else
