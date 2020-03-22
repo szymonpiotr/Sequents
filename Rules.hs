@@ -5,12 +5,15 @@ import Data.Tree
 import Sort
 import Text.PrettyPrint
 
+-- insert a singular formula in a sequent, 
+-- depending on its form
 insert :: For -> CanSeq -> CanSeq
 insert f (Can (xs, ys, zs))
 	| var f     = Can (f:xs, ys, zs)
 	| beta f    = Can (xs, ys, f:zs)
 	| otherwise = Can (xs, f:ys, zs)
-	
+
+-- same as above, but for the dual calculus
 insertDual :: For -> DualSeq -> DualSeq
 insertDual f (Dual (xs, ys, zs))
 	| var f	= Dual (f:xs, ys, zs)	 
@@ -18,6 +21,8 @@ insertDual f (Dual (xs, ys, zs))
 	| otherwise = Dual (xs, ys, f:zs)
 
 
+-- rules for logical connectives  in canonical calculus
+-- branching
 ruleAlpha :: CanSeq -> [CanSeq]
 ruleAlpha (Can (xs, y:ys, zs)) = case y of
     A n m -> [(insert n (Can (xs,ys, zs))), (insert m (Can (xs, ys, zs)))]
@@ -26,40 +31,48 @@ ruleAlpha (Can (xs, y:ys, zs)) = case y of
     N (I n m) -> [(insert n (Can (xs,ys, zs))), (insert (N m) (Can (xs, ys, zs)))]
     N (D n m) -> [(insert (N n) (Can (xs,ys, zs))), (insert (N m) (Can (xs, ys, zs)))]
 	
+-- branching rules in dual calculus	
 branchingDual :: DualSeq -> [DualSeq]
 branchingDual (Dual (xs, y:ys, zs)) = case y of
     D n m -> [(insertDual n (Dual (xs,ys, zs))), (insertDual m (Dual (xs, ys, zs)))]
     N (A n m) -> [(insertDual (N n) (Dual (xs,ys, zs))), (insertDual (N m) (Dual (xs, ys, zs)))]
 
-
+-- non branching rules in canonical calculus
 ruleBeta :: CanSeq -> [CanSeq]
 ruleBeta (Can (xs, ys, z:zs)) = case z of
     I n m -> [insert m (insert (N n) (Can (xs,ys, zs)))]
     D n m -> [insert m (insert n (Can (xs,ys, zs)))]
     N (A n m) -> [insert (N m) (insert (N n) (Can (xs,ys, zs)))]
-	
+
+-- checks if a given sequent is atomic
+-- that is there are only variables left
 atomicseq (Can (x, y, z)) = if ((null y && null z) || checkform y z) then True else False 
 
+-- checks if there are corresponding formula
+-- in two given lists of formulas
 checkform :: [For] -> [For] -> Bool
 checkform [] ys = False
 checkform (x:xs) ys = case x of 
 	N z -> z `elem` ys
 	z -> (N z) `elem` ys 
 
-
+-- applies a given rule to a singular sequent depending on
+-- formulas it's comprised of
 applyrule :: CanSeq -> [CanSeq]
 applyrule (Can (x, y, z)) 
 		| atomicseq (Can (x, y, z))  = [Can (x, y, z)]
 		| not (null z) 		   = ruleBeta (Can (x, y, z)) 
 		| otherwise 		   = ruleAlpha (Can (x, y, z)) 
 
+-- using the above function to work on hypersequent
 applyrule1 :: [CanSeq] -> [CanSeq]
 applyrule1 (x:xs) = if atomicseq x then (x:applyrule1 xs) else (applyrule x) ++ xs
 applyrule1 [] = []  
 
-
+-- build a tree using rule applying rules to hypersequent
 buildtree :: CanSeq -> Tree [CanSeq]
 buildtree x = Node [x] [Node (applyrule x) []]
+
 
 prooftree :: Tree [CanSeq] -> Tree [CanSeq]
 prooftree (Node x []) 
