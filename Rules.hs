@@ -156,7 +156,7 @@ prooftree2 (Node x xs) = Node x (map prooftree2 xs)
 derdual :: [DualSeq] -> Tree [DualSeq]
 derdual (x:xs) = until (fun3) prooftree2 (Node (x:xs) [])
 
--- resolution on first hyperseqeunt fulfilling criteria for resolution
+-- searching for the first hyperseqeunt fulfilling criteria for resolution
 fun3 :: Tree [DualSeq] -> Bool
 fun3 (Node (x:xs) []) = fun2 x xs == (x:xs)
 fun3 (Node (x:xs) [z]) = fun3 z
