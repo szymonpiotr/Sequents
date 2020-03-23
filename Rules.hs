@@ -143,21 +143,26 @@ fun2 x (y:ys) = if c == [] then fun2 x ys ++ [y] else
 			c = compllist x y
 	  
 
-
+-- checking if dual hypersequent is closed -- all lists are empty
 closedhyp :: [DualSeq] -> Bool
 closedhyp (x:xs) = any (\x -> x == Dual ([], [], [])) xs
 
+-- building proof tree using resolution only
 prooftree2 :: Tree [DualSeq] -> Tree [DualSeq]
 prooftree2 (Node (x:xs) []) = (Node (x:xs) [(Node (fun2 x xs) [])])
 prooftree2 (Node x xs) = Node x (map prooftree2 xs)
 
+-- as above, but starting with a hypersequent
 derdual :: [DualSeq] -> Tree [DualSeq]
 derdual (x:xs) = until (fun3) prooftree2 (Node (x:xs) [])
 
+-- resolution on first hyperseqeunt fulfilling criteria for resolution
 fun3 :: Tree [DualSeq] -> Bool
 fun3 (Node (x:xs) []) = fun2 x xs == (x:xs)
 fun3 (Node (x:xs) [z]) = fun3 z
 
+
+-- printing formulas
 printFor :: For -> String
 printFor for = case for of
     (V y)    -> "p" ++ (show y)
