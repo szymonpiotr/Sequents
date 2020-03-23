@@ -37,6 +37,9 @@ branchingDual (Dual (xs, y:ys, zs)) = case y of
     D n m -> [(insertDual n (Dual (xs,ys, zs))), (insertDual m (Dual (xs, ys, zs)))]
     N (A n m) -> [(insertDual (N n) (Dual (xs,ys, zs))), (insertDual (N m) (Dual (xs, ys, zs)))]
     I n m -> [insertDual (N n) (Dual (xs, ys, zs)), inserDual (m) (Dual (xs, ys, zs))]
+    E n m -> [(insert (N m) (insert (N n) (Can (xs,ys, zs)))), (insert n (insert m (Can (xs, ys, zs))))]
+    N (E n m) -> [(insert m (insert (N n) (Can (xs,ys, zs)))), (insert n (insert (N m) (Can (xs, ys, zs))))]
+
 
 -- nonbranching rules in dual calculus
 nonbranchingDual :: DualSeq -> [DualSeq]
